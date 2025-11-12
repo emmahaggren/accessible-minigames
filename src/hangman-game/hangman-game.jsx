@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
+import './hang-man.css'
+import cat from "../images/cat.png";
 
 export default function HangmanGame() {
 
@@ -10,6 +12,20 @@ export default function HangmanGame() {
   const [lastGuess, setLastGuess] = useState(null);
   const [playState, setPlayState] = useState("playing"); // "playing", "won", "lost"
   const maxWrong = 10;
+  const images = [
+    {src :"src/images/0.png", alt: "A blank image"},
+    {src :"src/images/1.png", alt: "A hill"},
+    {src :"src/images/2.png", alt: "A hill and half a stem"},
+    {src :"src/images/3.png", alt: "A hill and a finished stem"},
+    {src :"src/images/4.png", alt: "A hill, stem and rope"},
+    {src :"src/images/5.png", alt: "A hung head"},
+    {src :"src/images/6.png", alt: "A hung head and torso"},
+    {src :"src/images/7.png", alt: "A hung head, torso and one arm"},
+    {src :"src/images/8.png", alt: "A hung head, torso and both arms"},
+    {src :"src/images/9.png", alt: "A hung body with a leg missing"},
+    {src :"src/images/10.png", alt: "A fully hung man"},
+    
+    ]
 
 
 
@@ -101,29 +117,46 @@ export default function HangmanGame() {
 
 
 
+
+
+
+
+
   return (
     <main style={{ padding: 20 }}>
-      <h1>Hangman Game</h1>
-      <p>
-        This is a placeholder for the Hangman Game.
+      <h1 className="title-text"tabIndex="0">Hangman Game!</h1>
+      <div className = 'container'>
+        <img 
+        src={images[wrongGuesses].src}
+        alt={images[wrongGuesses].alt}
+        className='picture'
+        tabIndex="0"
+        />
+
+      
+      <div className= "textContainer" >
+      <p tabIndex="0">
+        {/*<strong>Secret Word:</strong> {secretWord} */} 
       </p>
-      <p>
-        <strong>Secret Word:</strong> {secretWord}
-      </p>
-      <p>
-        <strong>Shown Word:</strong> {shownWord}
+      <p tabIndex="0">
+        <strong>Word:</strong> {shownWord}
       </p>
 
-      <p>
+      <p tabIndex="0">
         <strong>Wrong letters:</strong> {wrongLetters.join(', ') || 'None'}
       </p>
-      <p>
+      <p tabIndex="0">
         <strong>Remaining guesses:</strong> {Math.max(0, maxWrong - wrongGuesses)} / {maxWrong}
       </p>
+        
+      </div>
+      </div>
+ 
 
       <p>
         <a href="/">Back to front page</a>
       </p>
+  
     </main>
   )
 }
