@@ -134,7 +134,7 @@ export default function HangmanGame() {
         />
 
       
-      <div className= "textContainer" >
+      <div className= "textContainer">
       <p tabIndex="0">
         {/*<strong>Secret Word:</strong> {secretWord} */} 
       </p>

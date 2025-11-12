@@ -2,7 +2,7 @@
 
 .title-text {
   font-family: "Comic Neue", "Poppins", sans-serif;
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: 700;
   color: #0a2e57; 
   text-shadow: 2px 2px 0px #ffffff; 
@@ -11,6 +11,12 @@
   background-color: rgba(255, 255, 255, 0.4);
   padding: 10px 20px;
   border-radius: 20px;
+}
+.container {
+  display: flex;
+  flex-direction: column;   
+  align-items: center;      
+  justify-content: center;
 }
 
 body {
@@ -25,37 +31,21 @@ body {
 .icons {
   display: flex;
   justify-content: center;
-  gap: 40px; 
+  align-items: center;
+  gap: 40px;
+  width: 100%;      
+  margin: 0 auto;     
 }
 
 
-
 .hangman-icon {
-  width: 200px;
-  height: 200px;
-  transition: transform 0.2s, width 0.2s, height 0.2s;
+  width: 180px;
+  height: 180px;
 }
 .hangman-icon:hover {
   transform: scale(1.1) translateY(-15px);
 }
 
-.quiz-icon {
-  width: 220px;
-  height: 220px;
-  transition: transform 0.2s, width 0.2s, height 0.2s;
-}
-.quiz-icon:hover {
-  transform: scale(1.1) translateY(-15px);
-}
-
-.jump-icon {
-  width: 220px;
-  height: 220px;
-  transition: transform 0.2s, width 0.2s, height 0.2s;
-}
-.jump-icon:hover {
-  transform: scale(1.1) translateY(-15px);
-}
 
 
 .cat {
