@@ -2,7 +2,7 @@
 
 .title-text {
   font-family: "Comic Neue", "Poppins", sans-serif;
-  font-size: 3rem;
+  font-size: 4rem;
   font-weight: 700;
   color: #0a2e57; 
   text-shadow: 2px 2px 0px #ffffff; 
@@ -30,13 +30,12 @@ body {
 
 
 
-.memory-icon {
-  width: 250px;
-  height: 250px;
-  transform: translateY(-30px);
+.hangman-icon {
+  width: 200px;
+  height: 200px;
   transition: transform 0.2s, width 0.2s, height 0.2s;
 }
-.memory-icon:hover {
+.hangman-icon:hover {
   transform: scale(1.1) translateY(-15px);
 }
 
