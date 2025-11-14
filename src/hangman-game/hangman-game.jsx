@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
+import useSound from 'use-sound';
+import correctSfx from '../audio/Correct-button.mp3';
 import './hang-man.css'
-import cat from "../images/cat.png";
 
 export default function HangmanGame() {
 
@@ -27,6 +28,7 @@ export default function HangmanGame() {
     
     ]
 
+  const [playCorrect] = useSound(correctSfx, { volume: 0.6 });
 
 
   // Gets a random word from the wordlist in words.txt
@@ -69,6 +71,7 @@ export default function HangmanGame() {
       if (!correctLetters.includes(letter)) {
         setCorrectLetters((prev) => [...prev, letter]);
         setLastGuess({ letter, type: 'correct' });
+        playCorrect();
       }
     } else {
       if (!wrongLetters.includes(letter)) {
@@ -114,13 +117,6 @@ export default function HangmanGame() {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [playState, handleGuess]);
-
-
-
-
-
-
-
 
   return (
     <main style={{ padding: 20 }}>
