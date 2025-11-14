@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import "./hang-man.css";
+import useSound from 'use-sound';
+import correctSfx from '../audio/Correct-button.mp3';
 import ReactDOM from "react-dom";
 import Confetti from "react-confetti";
 
@@ -15,18 +17,21 @@ export default function HangmanGame() {
   const maxWrong = 10;
 
   const images = [
-    { src: "src/images/0.png", alt: "A blank image" },
-    { src: "src/images/1.png", alt: "A hill" },
-    { src: "src/images/2.png", alt: "A hill and half a stem" },
-    { src: "src/images/3.png", alt: "A hill and a finished stem" },
-    { src: "src/images/4.png", alt: "A hill, stem and rope" },
-    { src: "src/images/5.png", alt: "A hung head" },
-    { src: "src/images/6.png", alt: "A hung head and torso" },
-    { src: "src/images/7.png", alt: "A hung head, torso and one arm" },
-    { src: "src/images/8.png", alt: "A hung head, torso and both arms" },
-    { src: "src/images/9.png", alt: "A hung body with a leg missing" },
-    { src: "src/images/10.png", alt: "A fully hung man" },
-  ];
+    {src :"src/images/0.png", alt: "A blank image"},
+    {src :"src/images/1.png", alt: "A hill"},
+    {src :"src/images/2.png", alt: "A hill and half a stem"},
+    {src :"src/images/3.png", alt: "A hill and a finished stem"},
+    {src :"src/images/4.png", alt: "A hill, stem and rope"},
+    {src :"src/images/5.png", alt: "A hung head"},
+    {src :"src/images/6.png", alt: "A hung head and torso"},
+    {src :"src/images/7.png", alt: "A hung head, torso and one arm"},
+    {src :"src/images/8.png", alt: "A hung head, torso and both arms"},
+    {src :"src/images/9.png", alt: "A hung body with a leg missing"},
+    {src :"src/images/10.png", alt: "A fully hung man"},
+    
+    ]
+    const [playCorrect] = useSound(correctSfx, { volume: 0.6 });
+
 
   // Gets a random word from the wordlist in words.txt
   function selectWord() {
