@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import "./hang-man.css";
 import useSound from 'use-sound';
-import correctSfx from '../audio/Correct-button.mp3';
+import correctSfx from '../audio/correct.mp3';
 import errorSfx from '../audio/error.mp3';
 import winSfx from '../audio/win.mp3';
+import wrongSfx from '../audio/wrong.mp3';
 import ReactDOM from "react-dom";
 import Confetti from "react-confetti";
 
@@ -38,6 +39,7 @@ export default function HangmanGame() {
   const [playCorrect, { stop: stopCorrect }] = useSound(correctSfx, { volume: 0.6 });
   const [playWin, { stop: stopWin }] = useSound(winSfx, { volume: 0.8 });
   const [playError, { stop: stopError }] = useSound(errorSfx, { volume: 0.6 });
+  const [playWrong, { stop: stopWrong }] = useSound(wrongSfx, { volume: 0.6 });
 
 
 
@@ -59,6 +61,7 @@ export default function HangmanGame() {
       if (typeof stopWin === 'function') stopWin();
       if (typeof stopCorrect === 'function') stopCorrect();
       if (typeof stopError === 'function') stopError();
+      if (typeof stopWrong === 'function') stopWrong();
     } catch {
       // ignore stop errors
     }
@@ -120,7 +123,12 @@ export default function HangmanGame() {
           setWrongLetters((prev) => [...prev, letter]);
           setWrongGuesses((prev) => prev + 1);
           setLastGuess({ letter, type: "wrong" });
+          try {
+            playWrong();
+          } catch (err) {
+            void err;
           }
+        }
       }
     },
       [secretWord, correctLetters, wrongLetters, playState, playCorrect, playError]
