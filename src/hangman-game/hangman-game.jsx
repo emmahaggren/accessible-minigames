@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import "./hang-man.css";
 import useSound from 'use-sound';
 import correctSfx from '../audio/Correct-button.mp3';
+import errorSfx from '../audio/error.mp3';
+import winSfx from '../audio/win.mp3';
 import ReactDOM from "react-dom";
 import Confetti from "react-confetti";
 
@@ -16,6 +18,7 @@ export default function HangmanGame() {
 
   const maxWrong = 10;
 
+  // Hangman-images and their alt texts for each wrong guess count
   const images = [
     {src :"src/images/0.png", alt: "A blank image"},
     {src :"src/images/1.png", alt: "A hill"},
@@ -29,8 +32,13 @@ export default function HangmanGame() {
     {src :"src/images/9.png", alt: "A hung body with a leg missing"},
     {src :"src/images/10.png", alt: "A fully hung man"},
     
-    ]
-    const [playCorrect] = useSound(correctSfx, { volume: 0.6 });
+  ]
+
+  // get play and stop controls from use-sound
+  const [playCorrect, { stop: stopCorrect }] = useSound(correctSfx, { volume: 0.6 });
+  const [playWin, { stop: stopWin }] = useSound(winSfx, { volume: 0.8 });
+  const [playError, { stop: stopError }] = useSound(errorSfx, { volume: 0.6 });
+
 
 
   // Gets a random word from the wordlist in words.txt
@@ -46,6 +54,14 @@ export default function HangmanGame() {
 
 
   function restartGame() {
+    //Reset sounds
+    try {
+      if (typeof stopWin === 'function') stopWin();
+      if (typeof stopCorrect === 'function') stopCorrect();
+      if (typeof stopError === 'function') stopError();
+    } catch {
+      // ignore stop errors
+    }
     setWrongLetters([]);
     setCorrectLetters([]);
     setWrongGuesses(0);
@@ -81,21 +97,33 @@ export default function HangmanGame() {
       if (!letter) return;
       letter = letter.toUpperCase();
       if (playState !== "playing") return;
-
+      // The letter was already guessed
+      if (correctLetters.includes(letter) || wrongLetters.includes(letter)) {
+        setLastGuess({ letter, type: "already guessed" });
+        try {
+          playError();
+        } catch (err) {
+          void err;
+        }
+        return;
+      }
       if (secretWord.includes(letter)) {
+        // The letter was correct
         if (!correctLetters.includes(letter)) {
           setCorrectLetters((prev) => [...prev, letter]);
           setLastGuess({ letter, type: "correct" });
+          playCorrect();
         }
       } else {
+        // The letter was wrong
         if (!wrongLetters.includes(letter)) {
           setWrongLetters((prev) => [...prev, letter]);
           setWrongGuesses((prev) => prev + 1);
           setLastGuess({ letter, type: "wrong" });
-        }
+          }
       }
     },
-    [secretWord, correctLetters, wrongLetters, playState]
+      [secretWord, correctLetters, wrongLetters, playState, playCorrect, playError]
   );
 
   useEffect(() => {
@@ -134,6 +162,18 @@ export default function HangmanGame() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [handleGuess]);
 
+
+  // Play win sound when playState becomes 'won'
+  useEffect(() => {
+    if (playState === 'won') {
+      try {
+        playWin();
+      } catch {
+        // ignore play errors (browser autoplay policies)
+      }
+    }
+  }, [playState, playWin]);
+
   /*Pop-Up*/
   function GamePopup({
     open,
@@ -142,7 +182,7 @@ export default function HangmanGame() {
     onClose,
     soundUrl,
     showConfetti,
-    message 
+    message
   }) {
     const buttonRef = useRef(null);
     const audioRef = useRef(null);
@@ -154,7 +194,6 @@ export default function HangmanGame() {
       }
     }, [open]);
 
- 
     useEffect(() => {
       if (!open || !soundUrl) return;
 
@@ -163,6 +202,8 @@ export default function HangmanGame() {
       audio.play().catch(() => {
        
       });
+
+
 
       return () => {
         if (audioRef.current) {
@@ -218,7 +259,12 @@ export default function HangmanGame() {
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {playState === 'won' && `You won! The word was ${secretWord}.`}
         {playState === 'lost' && `You lost. The word was ${secretWord}.`}
-        {lastGuess && playState === 'playing' && `${lastGuess.type === 'correct' ? 'Correct' : 'Wrong'}: ${lastGuess.letter}`}
+        {lastGuess && playState === 'playing' && (
+          lastGuess.type === 'correct' ? `Correct: ${lastGuess.letter}` :
+          lastGuess.type === 'wrong' ? `Wrong: ${lastGuess.letter}` :
+          lastGuess.type === 'already' ? `Already guessed: ${lastGuess.letter}` :
+          ''
+        )}
       </div>
 
       <div className="container">
@@ -249,7 +295,6 @@ export default function HangmanGame() {
             title="You win! 🎉"
             buttonText="Play Again"
             onClose={restartGame}
-            soundUrl="src/sounds/win.wav"
             showConfetti={true}
           />
         )}
