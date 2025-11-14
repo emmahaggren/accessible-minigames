@@ -2,11 +2,11 @@
   .title-text {
     font-size: 4rem;
     font-weight: 700;
-    color: #0a2e57; 
+    color: #072245;
     text-shadow: 2px 2px 0px #ffffff; 
     text-align: center;
     margin: 0 auto 40px auto;
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.95);
     padding: 10px 20px;
     border-radius: 20px;
   }
@@ -35,9 +35,9 @@
   .textContainer{
     font-size: 1.5rem;
     font-weight: 600;
-    color: #0a2e57;
+    color: #072245;
     text-shadow: 1px 1px 0px #ffffff;
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.95);
     padding: 16px 20px;
     border-radius: 12px;
   text-align: left;
@@ -47,6 +47,26 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+  }
+
+  /* visually-hidden helper for screen-reader-only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .instructions {
+    margin-top: 12px;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #072245;
   }
 
   @media (max-width: 700px) {
@@ -66,15 +86,15 @@
       min-width: 0;
     }
   }
-/* Dark transparent background covering the whole screen */
+
 .overlay {
     position: fixed;
-    inset: 0; /* top:0; right:0; bottom:0; left:0 */
+    inset: 0;
     background: rgba(0, 0, 0, 0.4);
     display: flex;
-    justify-content: center;  /* center horizontally */
-    align-items: flex-start;  /* align at the top */
-    padding-top: 40px;        /* distance from top */
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px;
     z-index: 9999;
   }
   
@@ -91,13 +111,13 @@
   .popup h2 {
     margin: 0 0 10px;
     font-size: 1.4rem;
-    color: #000; /* make sure it's visible */
+    color: #000;
   }
   .popup p {
     margin-top: 12px;
     font-size: 1.2rem;
-    color: black;        /* make sure text is visible */
-    text-align: center;  /* optional, looks nicer */
+    color: black;
+    text-align: center;
   }
 
   

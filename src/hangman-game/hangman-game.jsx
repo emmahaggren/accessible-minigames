@@ -205,9 +205,21 @@ export default function HangmanGame() {
 
   return (
     <main style={{ padding: 20 }}>
-      <h1 className="title-text" tabIndex="0">
+      <h1 className="title-text" tabIndex="0" aria-describedby="hangman-instructions">
         Hangman Game!
       </h1>
+
+      {/* Visible instructions for sighted users and referenced by aria-describedby */}
+      <p id="hangman-instructions" className="instructions">
+        Press any letter key to guess a letter.
+      </p>
+
+      {/* Live region for screen readers: announces the last guess and win/lose state */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {playState === 'won' && `You won! The word was ${secretWord}.`}
+        {playState === 'lost' && `You lost. The word was ${secretWord}.`}
+        {lastGuess && playState === 'playing' && `${lastGuess.type === 'correct' ? 'Correct' : 'Wrong'}: ${lastGuess.letter}`}
+      </div>
 
       <div className="container">
         <img
