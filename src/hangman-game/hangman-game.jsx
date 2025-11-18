@@ -102,7 +102,7 @@ export default function HangmanGame() {
       if (playState !== "playing") return;
       // The letter was already guessed
       if (correctLetters.includes(letter) || wrongLetters.includes(letter)) {
-        setLastGuess({ letter, type: "already guessed" });
+        setLastGuess({ letter, type: "already" });
         try {
           playError();
         } catch (err) {
@@ -131,7 +131,7 @@ export default function HangmanGame() {
         }
       }
     },
-      [secretWord, correctLetters, wrongLetters, playState, playCorrect, playError]
+      [secretWord, correctLetters, wrongLetters, playState, playCorrect, playError, playWrong]
   );
 
   useEffect(() => {
@@ -156,19 +156,7 @@ export default function HangmanGame() {
   }, [secretWord, correctLetters, wrongGuesses]);
 
   
-  useEffect(() => {
-    function onKeyDown(e) {
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      const key = e.key;
-      if (/^[a-zA-Z]$/.test(key)) {
-        e.preventDefault();
-        handleGuess(key);
-      }
-    }
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [handleGuess]);
+  
 
 
   // Play win sound when playState becomes 'won'
@@ -182,20 +170,45 @@ export default function HangmanGame() {
     }
   }, [playState, playWin]);
 
+  // Global keyboard support for non-screen-reader users: listen for letter keys
+  useEffect(() => {
+    function onGlobalKeyDown(e) {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const key = e.key;
+      if (!/^[a-zA-Z]$/.test(key)) return;
+
+      // If the user is focused in an input/textarea/contentEditable, don't intercept
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || (active instanceof HTMLElement && active.isContentEditable))) {
+        return;
+      }
+
+      try {
+        e.preventDefault();
+      } catch (err) {
+        void err;
+      }
+      handleGuess(key);
+    }
+
+    window.addEventListener('keydown', onGlobalKeyDown);
+    return () => window.removeEventListener('keydown', onGlobalKeyDown);
+  }, [handleGuess]);
+
+  // on-screen keyboard is used instead of raw key capture for screen-reader reliability
+
   /*Pop-Up*/
   function GamePopup({
     open,
     title,
     buttonText,
     onClose,
-    soundUrl,
+    onOpenPlay,
     showConfetti,
     message
   }) {
     const buttonRef = useRef(null);
-    const audioRef = useRef(null);
 
-    
     useEffect(() => {
       if (open && buttonRef.current) {
         buttonRef.current.focus();
@@ -203,23 +216,13 @@ export default function HangmanGame() {
     }, [open]);
 
     useEffect(() => {
-      if (!open || !soundUrl) return;
-
-      const audio = new Audio(soundUrl);
-      audioRef.current = audio;
-      audio.play().catch(() => {
-       
-      });
-
-
-
-      return () => {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current = null;
-        }
-      };
-    }, [open, soundUrl]);
+      if (!open || typeof onOpenPlay !== 'function') return;
+      try {
+        onOpenPlay();
+      } catch (err) {
+        void err;
+      }
+    }, [open, onOpenPlay]);
 
     if (!open) return null;
 
@@ -275,13 +278,16 @@ export default function HangmanGame() {
         )}
       </div>
 
-      <div className="container">
-        <img
-          src={images[wrongGuesses].src}
-          alt={images[wrongGuesses].alt}
-          className="picture"
-          tabIndex="0"
-        />
+      <div className="container" aria-label="Hangman game area; use the on-screen keyboard to guess letters">
+        <div className="picture-container">
+          <img
+            src={images[wrongGuesses].src}
+            alt={images[wrongGuesses].alt}
+            className="picture"
+            tabIndex="0"
+          />
+        </div>
+        {/* Right column: popups + info */}
       <div>
         {/* Lose popup */}
         {playState === "lost" && (
@@ -290,7 +296,7 @@ export default function HangmanGame() {
             title="You lose 😢"
             buttonText="Try Again"
             onClose={restartGame}
-            soundUrl="/sounds/lose.mp3"
+            onOpenPlay={playWrong}
             showConfetti={false}
             message={`The word was: ${secretWord}`}
           />
@@ -321,6 +327,31 @@ export default function HangmanGame() {
             <strong>Remaining guesses:</strong>{" "}
             {Math.max(0, maxWrong - wrongGuesses)} / {maxWrong}
           </p>
+        </div>
+      </div>
+
+      {/* Keyboard row centered below image/info */}
+      <div className="keyboard-row" aria-hidden={false}>
+        <div id="onscreen-keys" className="letter-grid" role="group" aria-label="On-screen keyboard">
+          {Array.from({ length: 26 }).map((_, i) => {
+            const letter = String.fromCharCode(65 + i);
+            const isCorrect = correctLetters.includes(letter);
+            const isWrong = wrongLetters.includes(letter);
+            const used = isCorrect || isWrong;
+            const btnClass = `letter-btn ${isCorrect ? 'used-correct' : isWrong ? 'used-wrong' : ''}`;
+            return (
+              <button
+                key={letter}
+                className={btnClass}
+                onClick={() => handleGuess(letter)}
+                aria-label={`Letter ${letter}`}
+                aria-pressed={used}
+                disabled={used}
+              >
+                {letter}
+              </button>
+            );
+          })}
         </div>
       </div>
 
