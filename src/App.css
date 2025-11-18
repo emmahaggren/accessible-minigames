@@ -16,13 +16,14 @@
   justify-content: center;
 }
 
-body {
+/* Scope layout to the top-level App page so other routes aren't affected */
+.page {
   background-color: lightblue;
   display: flex;
   flex-direction: column;
   align-items: center; 
   justify-content: center; 
-  height: 100vh; 
+  min-height: 100vh; /* allow the page to grow and scroll if content is taller */
   margin: 0;
 }
 .icons {
