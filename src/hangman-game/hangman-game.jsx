@@ -16,6 +16,7 @@ export default function HangmanGame() {
   const [shownWord, setShownWord] = useState("");
   const [lastGuess, setLastGuess] = useState(null);
   const [playState, setPlayState] = useState("playing"); // "playing", "won", "lost"
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   const maxWrong = 10;
 
@@ -104,7 +105,7 @@ export default function HangmanGame() {
       if (correctLetters.includes(letter) || wrongLetters.includes(letter)) {
         setLastGuess({ letter, type: "already" });
         try {
-          playError();
+          if (soundEnabled) playError();
         } catch (err) {
           void err;
         }
@@ -115,7 +116,7 @@ export default function HangmanGame() {
         if (!correctLetters.includes(letter)) {
           setCorrectLetters((prev) => [...prev, letter]);
           setLastGuess({ letter, type: "correct" });
-          playCorrect();
+          if (soundEnabled) playCorrect();
         }
       } else {
         // The letter was wrong
@@ -124,14 +125,14 @@ export default function HangmanGame() {
           setWrongGuesses((prev) => prev + 1);
           setLastGuess({ letter, type: "wrong" });
           try {
-            playWrong();
+            if (soundEnabled) playWrong();
           } catch (err) {
             void err;
           }
         }
       }
     },
-      [secretWord, correctLetters, wrongLetters, playState, playCorrect, playError, playWrong]
+      [secretWord, correctLetters, wrongLetters, playState, playCorrect, playError, playWrong, soundEnabled]
   );
 
   useEffect(() => {
@@ -163,19 +164,19 @@ export default function HangmanGame() {
   useEffect(() => {
     if (playState === 'won') {
       try {
-        playWin();
+        if (soundEnabled) playWin();
       } catch {
         // ignore play errors (browser autoplay policies)
       }
     }
-  }, [playState, playWin]);
+  }, [playState, playWin, soundEnabled]);
 
   // Global keyboard support for non-screen-reader users: listen for letter keys
   useEffect(() => {
     function onGlobalKeyDown(e) {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const key = e.key;
-      if (!/^[a-zA-Z]$/.test(key)) return;
+      if (!(/^[a-zA-Z]$/.test(key))) return;
 
       // If the user is focused in an input/textarea/contentEditable, don't intercept
       const active = document.activeElement;
@@ -196,6 +197,22 @@ export default function HangmanGame() {
   }, [handleGuess]);
 
   // on-screen keyboard is used instead of raw key capture for screen-reader reliability
+
+  // Sound toggle handler: stops currently-playing sounds when disabling
+  function toggleSound() {
+    const newVal = !soundEnabled;
+    setSoundEnabled(newVal);
+    if (!newVal) {
+      try {
+        if (typeof stopWin === 'function') stopWin();
+        if (typeof stopCorrect === 'function') stopCorrect();
+        if (typeof stopError === 'function') stopError();
+        if (typeof stopWrong === 'function') stopWrong();
+      } catch {
+        // ignore
+      }
+    }
+  }
 
   /*Pop-Up*/
   function GamePopup({
@@ -266,6 +283,17 @@ export default function HangmanGame() {
         Press any letter key to guess a letter.
       </p>
 
+      <div className="keyboard-controls">
+        <button
+          className="sound-toggle"
+          onClick={toggleSound}
+          aria-pressed={soundEnabled}
+          aria-label={`Sound ${soundEnabled ? 'on' : 'off'}`}
+        >
+          Sound: {soundEnabled ? 'On' : 'Off'}
+        </button>
+      </div>
+
       {/* Live region for screen readers: announces the last guess and win/lose state */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {playState === 'won' && `You won! The word was ${secretWord}.`}
@@ -296,7 +324,7 @@ export default function HangmanGame() {
             title="You lose 😢"
             buttonText="Try Again"
             onClose={restartGame}
-            onOpenPlay={playWrong}
+            onOpenPlay={soundEnabled ? playWrong : undefined}
             showConfetti={false}
             message={`The word was: ${secretWord}`}
           />
