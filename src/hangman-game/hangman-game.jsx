@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import "./hang-man.css";
-import { useCorrectSound, useErrorSound, useWinSound, useWrongSound } from "../audio/sounds";
+import { useCorrectSound, useErrorSound, useWinSound, useWrongSound, useLoseSound} from "../audio/sounds";
 import ReactDOM from "react-dom";
 import Confetti from "react-confetti";
 
@@ -37,6 +37,7 @@ export default function HangmanGame() {
   const [playWin, { stop: stopWin }] = useWinSound({ volume: 0.8 });
   const [playError, { stop: stopError }] = useErrorSound({ volume: 0.6 });
   const [playWrong, { stop: stopWrong }] = useWrongSound({ volume: 0.6 });
+  const [playLose, { stop: stopLose }] = useLoseSound({ volume: 0.8 });
 
 
 
@@ -59,6 +60,7 @@ export default function HangmanGame() {
       if (typeof stopCorrect === 'function') stopCorrect();
       if (typeof stopError === 'function') stopError();
       if (typeof stopWrong === 'function') stopWrong();
+      if (typeof stopLose === 'function') stopLose();
     } catch {
       // ignore stop errors
     }
@@ -320,7 +322,7 @@ export default function HangmanGame() {
             title="You lose 😢"
             buttonText="Try Again"
             onClose={restartGame}
-            onOpenPlay={soundEnabled ? playWrong : undefined}
+            onOpenPlay={soundEnabled ? playLose : undefined}
             showConfetti={false}
             message={`The word was: ${secretWord}`}
           />
