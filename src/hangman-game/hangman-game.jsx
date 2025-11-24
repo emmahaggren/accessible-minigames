@@ -1,10 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import "./hang-man.css";
-import useSound from 'use-sound';
-import correctSfx from '../audio/correct.mp3';
-import errorSfx from '../audio/error.mp3';
-import winSfx from '../audio/win.mp3';
-import wrongSfx from '../audio/wrong.mp3';
+import { useCorrectSound, useErrorSound, useWinSound, useWrongSound } from "../audio/sounds";
 import ReactDOM from "react-dom";
 import Confetti from "react-confetti";
 
@@ -36,11 +32,11 @@ export default function HangmanGame() {
     
   ]
 
-  // get play and stop controls from use-sound
-  const [playCorrect, { stop: stopCorrect }] = useSound(correctSfx, { volume: 0.6 });
-  const [playWin, { stop: stopWin }] = useSound(winSfx, { volume: 0.8 });
-  const [playError, { stop: stopError }] = useSound(errorSfx, { volume: 0.6 });
-  const [playWrong, { stop: stopWrong }] = useSound(wrongSfx, { volume: 0.6 });
+  // get play and stop controls from custom sound hooks
+  const [playCorrect, { stop: stopCorrect }] = useCorrectSound({ volume: 0.6 });
+  const [playWin, { stop: stopWin }] = useWinSound({ volume: 0.8 });
+  const [playError, { stop: stopError }] = useErrorSound({ volume: 0.6 });
+  const [playWrong, { stop: stopWrong }] = useWrongSound({ volume: 0.6 });
 
 
 
