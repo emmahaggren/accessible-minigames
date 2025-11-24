@@ -62,6 +62,7 @@ export default function HangmanGame() {
       if (typeof stopError === 'function') stopError();
       if (typeof stopWrong === 'function') stopWrong();
       if (typeof stopLose === 'function') stopLose();
+      if (typeof stopWrongLite === 'function') stopWrongLite();
     } catch {
       // ignore stop errors
     }
