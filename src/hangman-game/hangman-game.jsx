@@ -335,15 +335,7 @@ export default function HangmanGame() {
       </div>
 
       <div className="container" aria-label="Hangman game area; use the on-screen keyboard to guess letters">
-        <div className="picture-container">
-          <img
-            src={images[wrongGuesses].src}
-            alt={images[wrongGuesses].alt}
-            className="picture"
-            tabIndex="0"
-          />
-        </div>
-        {/* Right column: popups + info */}
+        {/* Left column: popups + info */}
       <div>
         {/* Lose popup */}
         {playState === "lost" && (
@@ -383,6 +375,15 @@ export default function HangmanGame() {
             <strong>Remaining guesses:</strong>{" "}
             {Math.max(0, maxWrong - wrongGuesses)} / {maxWrong}
           </p>
+        </div>
+
+        <div className="picture-container">
+          <img
+            src={images[wrongGuesses].src}
+            alt={images[wrongGuesses].alt}
+            className="picture"
+            tabIndex="0"
+          />
         </div>
       </div>
 
