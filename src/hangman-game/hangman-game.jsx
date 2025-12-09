@@ -277,12 +277,30 @@ export default function HangmanGame() {
     );
   }
 
+  const firstInteraction = useRef(false);
+
+  useEffect(() => {
+    if (lastGuess && !firstInteraction.current) {
+      firstInteraction.current = true;
+      const anchor = document.getElementById("focus-anchor");
+      if (anchor) anchor.focus();
+    }
+  }, [lastGuess]);
+
+
 
   return (
     <main style={{ padding: 20 }}>
       <h1 className="title-text" tabIndex="0" aria-describedby="hangman-instructions">
         Hangman Game!
       </h1>
+
+      <div
+        tabIndex="-1"
+        id="focus-anchor"
+        style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
+      ></div>
+
 
       {/* Visible instructions for sighted users and referenced by aria-describedby */}
       <p id="hangman-instructions" className="instructions" intabIndex="0">
@@ -305,9 +323,13 @@ export default function HangmanGame() {
         {playState === 'won' && `You won! The word was ${secretWord}.`}
         {playState === 'lost' && `You lost. The word was ${secretWord}.`}
         {lastGuess && playState === 'playing' && (
-          lastGuess.type === 'correct' ? `Correct: ${lastGuess.letter}` :
-          lastGuess.type === 'wrong' ? `Wrong: ${lastGuess.letter}` :
-          lastGuess.type === 'already' ? `Already guessed: ${lastGuess.letter}` :
+          lastGuess.type === 'correct' ? `Correct, the word now is ${shownWord}` :
+          lastGuess.type === 'wrong' ? (() => {
+            const extra = (lastGuess && lastGuess.type === 'wrong' && !wrongLetters.includes(lastGuess.letter)) ? 1 : 0;
+            const remaining = Math.max(0, maxWrong - (wrongLetters.length + extra));
+            return `Wrong, ${remaining} more wrong guesses left`;
+          })() :
+          lastGuess.type === 'already' ? `Already guessed ${lastGuess.letter}` :
           ''
         )}
       </div>
