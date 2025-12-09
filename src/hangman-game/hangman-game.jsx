@@ -313,9 +313,13 @@ export default function HangmanGame() {
           onClick={toggleSound}
           aria-pressed={soundEnabled}
           aria-label={`Sound ${soundEnabled ? 'on' : 'off'}`}
+          aria-describedby="sound-warning"
         >
           Sound: {soundEnabled ? 'On' : 'Off'}
         </button>
+        <span id="sound-warning" className="sr-only">
+          Warning: sound may be disruptive to some users, and longer music will be played at the end of the game. Use this control to mute audio if needed.
+        </span>
       </div>
 
       {/* Live region for screen readers: announces the last guess and win/lose state */}
