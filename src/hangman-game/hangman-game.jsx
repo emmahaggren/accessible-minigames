@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import "./hang-man.css";
-import { useCorrectSound, useErrorSound, useWinSound, useWrongSound, useLoseSound, useWrongLiteSound, useWrongMidSound, useWrongHardSound} from "../audio/sounds";
+import { useCorrectSound, useErrorSound, useWinSound, useLoseSound, useWrongLiteSound, useWrongMidSound, useWrongHardSound} from "../audio/sounds";
 import ReactDOM from "react-dom";
 import Confetti from "react-confetti";
 
@@ -36,7 +36,6 @@ export default function HangmanGame() {
   const [playCorrect, { stop: stopCorrect }] = useCorrectSound({ volume: 0.6 });
   const [playWin, { stop: stopWin }] = useWinSound({ volume: 0.8 });
   const [playError, { stop: stopError }] = useErrorSound({ volume: 0.6 });
-  const [playWrong, { stop: stopWrong }] = useWrongSound({ volume: 0.6 });
   const [playLose, { stop: stopLose }] = useLoseSound({ volume: 0.8 });
   const [playWrongLite, { stop: stopWrongLite }] = useWrongLiteSound({ volume: 0.6 });
   const [playWrongMid, { stop: stopWrongMid }] = useWrongMidSound({ volume: 0.6 });
@@ -62,7 +61,6 @@ export default function HangmanGame() {
       if (typeof stopWin === 'function') stopWin();
       if (typeof stopCorrect === 'function') stopCorrect();
       if (typeof stopError === 'function') stopError();
-      if (typeof stopWrong === 'function') stopWrong();
       if (typeof stopLose === 'function') stopLose();
       if (typeof stopWrongLite === 'function') stopWrongLite();
       if (typeof stopWrongMid === 'function') stopWrongMid();
@@ -81,7 +79,7 @@ export default function HangmanGame() {
     selectWord();
   }
 
- 
+  // Update shownWord whenever correctLetters or secretWord changes
   useEffect(() => {
     let display = "";
     for (let char of secretWord) {
@@ -94,14 +92,14 @@ export default function HangmanGame() {
     setShownWord(display.trim());
   }, [correctLetters, secretWord]);
 
-
+  // Select a word when the component loads
   useEffect(() => {
     if (secretWord === "") {
       selectWord();
     }
   }, [secretWord]);
 
-
+  // Handle a guessed letter
   const handleGuess = useCallback(
     (letter) => {
       if (!letter) return;
@@ -146,9 +144,10 @@ export default function HangmanGame() {
         }
       }
     },
-      [secretWord, correctLetters, wrongLetters, playState, playCorrect, playError, playWrong, soundEnabled]
+      [secretWord, correctLetters, wrongLetters, playState, playCorrect, playError, playWrongLite, playWrongMid, playWrongHard, soundEnabled, wrongGuesses]
   );
 
+  // Check for win/loss conditions whenever relevant state changes
   useEffect(() => {
     if (!secretWord) return;
 
@@ -185,14 +184,14 @@ export default function HangmanGame() {
     }
   }, [playState, playWin, soundEnabled]);
 
-  // Global keyboard support for non-screen-reader users: listen for letter keys
+  // Global keyboard support for non-screen-reader users
   useEffect(() => {
     function onGlobalKeyDown(e) {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const key = e.key;
       if (!(/^[a-zA-Z]$/.test(key))) return;
 
-      // If the user is focused in an input/textarea/contentEditable, don't intercept
+      // Ignore keypresses when focus is in an input/textarea/contenteditable
       const active = document.activeElement;
       if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || (active instanceof HTMLElement && active.isContentEditable))) {
         return;
@@ -210,8 +209,6 @@ export default function HangmanGame() {
     return () => window.removeEventListener('keydown', onGlobalKeyDown);
   }, [handleGuess]);
 
-  // on-screen keyboard is used instead of raw key capture for screen-reader reliability
-
   // Sound toggle handler: stops currently-playing sounds when disabling
   function toggleSound() {
     const newVal = !soundEnabled;
@@ -219,16 +216,19 @@ export default function HangmanGame() {
     if (!newVal) {
       try {
         if (typeof stopWin === 'function') stopWin();
+        if (typeof stopLose === 'function') stopLose();
         if (typeof stopCorrect === 'function') stopCorrect();
         if (typeof stopError === 'function') stopError();
-        if (typeof stopWrong === 'function') stopWrong();
+        if (typeof stopWrongLite === 'function') stopWrongLite();
+        if (typeof stopWrongMid === 'function') stopWrongMid();
+        if (typeof stopWrongHard === 'function') stopWrongHard();
       } catch {
         // ignore
       }
     }
   }
 
-  /*Pop-Up*/
+  // Popup component for win/lose messages
   function GamePopup({
     open,
     title,
@@ -239,7 +239,8 @@ export default function HangmanGame() {
     message,
     soundEnabled,
     toggleSound
-  }) 
+  })
+
   {
     const buttonRef = useRef(null);
 
@@ -284,7 +285,7 @@ export default function HangmanGame() {
             {buttonText}
           </button>
     
-          {/* ✅ Sound toggle AFTER Try Again / Play Again */}
+          {/* Sound toggle after Try Again / Play Again */}
           <button
             className="sound-toggle"
             onClick={toggleSound}
@@ -308,7 +309,6 @@ export default function HangmanGame() {
       if (anchor) anchor.focus();
     }
   }, [lastGuess]);
-
 
 
   return (

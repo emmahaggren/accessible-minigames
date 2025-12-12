@@ -3,8 +3,8 @@ import './App.css'
 function App() {
   return (
     <div className="page">
-      <div className="container"> 
-        <h1 className="title-text"tabIndex="0">Welcome!</h1>
+      <div className="container">
+        <h1 className="title-text" tabIndex="0">Welcome!</h1>
         <div className='icons'>
           <a href="/hangman-game">
            <img
@@ -13,8 +13,6 @@ function App() {
             className="hangman-icon"
            />
           </a>
-
-
         </div>
       </div>
       <img src="src/images/cat.png" alt="Cat waving" className="cat" />

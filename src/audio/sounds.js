@@ -2,13 +2,12 @@ import useSound from 'use-sound';
 import correctSfx from './correct.mp3';
 import errorSfx from './error.mp3';
 import winSfx from './win.mp3';
-import wrongSfx from './wrong.mp3';
 import loseSfx from './lose.mp3';
 import wrongLiteSfx from './uh-oh.mp3';
 import wrongMidSfx from './oh-no.mp3';
 import wrongHardSfx from './nooo.mp3';
 
-// Custom hooks that wrap `useSound` so components can import one clean API
+// Hooks to play specific sound effects
 export function useCorrectSound(options) {
   return useSound(correctSfx, options);
 }
@@ -19,10 +18,6 @@ export function useErrorSound(options) {
 
 export function useWinSound(options) {
   return useSound(winSfx, options);
-}
-
-export function useWrongSound(options) {
-  return useSound(wrongSfx, options);
 }
 
 export function useLoseSound(options) {
@@ -41,4 +36,4 @@ export function useWrongHardSound(options) {
   return useSound(wrongHardSfx, options);
 }
 
-export { correctSfx, errorSfx, winSfx, wrongSfx, loseSfx, wrongLiteSfx, wrongMidSfx, wrongHardSfx };
+export { correctSfx, errorSfx, winSfx, loseSfx, wrongLiteSfx, wrongMidSfx, wrongHardSfx };

@@ -36,7 +36,6 @@
   .picture-container {
     flex: 0 0 48%;
     max-width: 720px;
-    max-height: 60vh; /* allow it to shrink when viewport is small, but not force a fixed height */
     min-height: 180px;
     display: flex;
     align-items: center;
@@ -44,7 +43,7 @@
     background: rgba(253, 229, 173, 0.95);
     border-radius: 12px;
     padding: 8px;
-    overflow: hidden; /* keep the image contained so it doesn't overflow the layout */
+    overflow: auto; /* allow scrolling to see the full image at high zoom */
   }
 
   .textContainer{
@@ -209,6 +208,7 @@
   .sound-toggle {
     font-weight: 700; /* bold */
     background-color: rgba(253, 229, 173, 1);
+    color: #072245;
   }
   
 
