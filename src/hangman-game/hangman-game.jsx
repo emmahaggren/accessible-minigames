@@ -228,8 +228,11 @@ export default function HangmanGame() {
     onClose,
     onOpenPlay,
     showConfetti,
-    message
-  }) {
+    message,
+    soundEnabled,
+    toggleSound
+  }) 
+  {
     const buttonRef = useRef(null);
 
     useEffect(() => {
@@ -256,7 +259,7 @@ export default function HangmanGame() {
         onClick={onClose}
       >
         {showConfetti && <Confetti />}
-
+    
         <div
           role="dialog"
           aria-labelledby="popup-title"
@@ -265,18 +268,28 @@ export default function HangmanGame() {
           onClick={(e) => e.stopPropagation()}
         >
           <h2 id="popup-title">{title}</h2>
-
+    
           {message && <p>{message}</p>}
-
+    
+          {/* Main action button */}
           <button ref={buttonRef} onClick={onClose}>
             {buttonText}
+          </button>
+    
+          {/* ✅ Sound toggle AFTER Try Again / Play Again */}
+          <button
+            className="sound-toggle"
+            onClick={toggleSound}
+            aria-pressed={soundEnabled}
+            aria-label={`Sound ${soundEnabled ? 'on' : 'off'}`}
+          >
+            Sound: {soundEnabled ? 'On' : 'Off'}
           </button>
         </div>
       </div>,
       document.body
     );
-  }
-
+    }
 
   return (
     <main style={{ padding: 20 }}>
@@ -333,6 +346,8 @@ export default function HangmanGame() {
             onOpenPlay={soundEnabled ? playLose : undefined}
             showConfetti={false}
             message={`The word was: ${secretWord}`}
+            soundEnabled={soundEnabled}
+            toggleSound={toggleSound}
           />
         )}
        
@@ -344,6 +359,8 @@ export default function HangmanGame() {
             buttonText="Play Again"
             onClose={restartGame}
             showConfetti={true}
+            soundEnabled={soundEnabled}
+            toggleSound={toggleSound}
           />
         )}
       </div>
