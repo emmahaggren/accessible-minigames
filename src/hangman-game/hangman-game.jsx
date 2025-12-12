@@ -325,7 +325,7 @@ export default function HangmanGame() {
 
 
       {/* Visible instructions for sighted users and referenced by aria-describedby */}
-      <p id="hangman-instructions" className="instructions" intabIndex="0">
+      <p id="hangman-instructions" className="instructions" tabIndex="0">
         Press any letter key to guess a letter.
       </p>
 
