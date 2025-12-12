@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import "./hang-man.css";
-import { useCorrectSound, useErrorSound, useWinSound, useWrongSound, useLoseSound, useWrongLiteSound} from "../audio/sounds";
+import { useCorrectSound, useErrorSound, useWinSound, useWrongSound, useLoseSound, useWrongLiteSound, useWrongMidSound, useWrongHardSound} from "../audio/sounds";
 import ReactDOM from "react-dom";
 import Confetti from "react-confetti";
 
@@ -38,7 +38,9 @@ export default function HangmanGame() {
   const [playError, { stop: stopError }] = useErrorSound({ volume: 0.6 });
   const [playWrong, { stop: stopWrong }] = useWrongSound({ volume: 0.6 });
   const [playLose, { stop: stopLose }] = useLoseSound({ volume: 0.8 });
-  const [playWrongLite, { stop: stopWrongLite }] = useWrongLiteSound({ volume: 0.5 });
+  const [playWrongLite, { stop: stopWrongLite }] = useWrongLiteSound({ volume: 0.6 });
+  const [playWrongMid, { stop: stopWrongMid }] = useWrongMidSound({ volume: 0.6 });
+  const [playWrongHard, { stop: stopWrongHard }] = useWrongHardSound({ volume: 0.6 });
 
 
 
@@ -63,9 +65,13 @@ export default function HangmanGame() {
       if (typeof stopWrong === 'function') stopWrong();
       if (typeof stopLose === 'function') stopLose();
       if (typeof stopWrongLite === 'function') stopWrongLite();
+      if (typeof stopWrongMid === 'function') stopWrongMid();
+      if (typeof stopWrongHard === 'function') stopWrongHard();
     } catch {
       // ignore stop errors
     }
+
+    // Reset game state, select new word
     setWrongLetters([]);
     setCorrectLetters([]);
     setWrongGuesses(0);
@@ -128,8 +134,10 @@ export default function HangmanGame() {
             if (soundEnabled) {
               if (wrongGuesses < 3) {
                 playWrongLite();
+              } else if (wrongGuesses < 7) {
+                playWrongMid();
               } else {
-                playWrong();
+                playWrongHard();
               }
             }
           } catch (err) {
